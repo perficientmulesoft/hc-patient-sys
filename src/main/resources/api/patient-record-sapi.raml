@@ -1,0 +1,31 @@
+#%RAML 1.0
+title: Patient-record-sapi
+description: This API gets you the pstient record
+/patient:
+  /{PatientId}:
+    get: 
+      responses:
+        200:
+          body:
+            application/json:
+              example: !include /Example/example.raml
+        400:
+          body:
+            application/json:
+              example: !include Example/Errorresponse.raml
+        404:
+          body:
+            application/json:
+              example: !include Example/Errorresponse.raml
+        500:
+          body:
+            application/json:
+              example:
+                Message: "Server down"
+        
+                 
+                
+               
+              
+                
+                

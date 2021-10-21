@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<db:config name="Database_Config" doc:name="Database Config" doc:id="073f794a-4523-4292-b4e2-7254bd8f6051" >
+		<db:my-sql-connection host="sql6.freesqldatabase.com" port="3306" user="sql6443846" password="9HaxhDvmes" database="sql6443846" />
+	</db:config>
+	<flow name="patient-record-sysFlow" doc:id="1017b0b5-c1c6-41c4-9c89-82a8e79aeb6f" >
+		<db:select doc:name="Select" doc:id="dc184d90-dd62-49bb-90b1-23f1fbe6921c" config-ref="Database_Config">
+			<db:sql ><![CDATA[Select * from PatientRecord where PatientId = :PatientId]]></db:sql>
+			<db:input-parameters ><![CDATA[#[PatientId : attributes.uriParams.PatientId]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="b768b60f-00c6-436d-aefd-4ccb6c046d52" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<ee:transform doc:name="Transform Message" doc:id="cab49df2-324a-4cc7-94f0-2586ad850aae">
+			<ee:message>
+				<ee:set-payload><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+200]]></ee:set-variable>
+					</ee:variables>
+		</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="442a3639-a703-47cc-acfd-fa68782efc63" message="Patient record fetched succesfully" />
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="cf30be33-b181-4549-899c-7bec15d54065" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	
+	
+	"Message": "Patient Record Not Found"
+
+
+} 
+]]></ee:set-payload>
+					</ee:message>
+					<ee:variables >
+						<ee:set-variable variableName="httpStatus" ><![CDATA[%dw 2.0
+output application/java
+---
+404]]></ee:set-variable>
+					</ee:variables>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>
