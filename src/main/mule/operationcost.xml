@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core" xmlns:db="http://www.mulesoft.org/schema/mule/db"
+	xmlns="http://www.mulesoft.org/schema/mule/core"
+	xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/db http://www.mulesoft.org/schema/mule/db/current/mule-db.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd">
+	<flow name="operationcostFlow" doc:id="abaf480c-985a-4a18-a889-603c9ad9625f" >
+		<db:select doc:name="Select" doc:id="36605afd-2cc7-46fa-b3bf-90227b6ae24c" config-ref="Database_Config">
+			<db:sql ><![CDATA[Select * from OperationCost where Surgery = :Surgery]]></db:sql>
+			<db:input-parameters ><![CDATA[#[Surgery : attributes.queryParams.Surgery]]]></db:input-parameters>
+		</db:select>
+		<choice doc:name="Choice" doc:id="71e0fc2b-c0f3-491f-b92b-ecf8bd248b34" >
+			<when expression="#[sizeOf(payload) &gt; 0]">
+				<ee:transform doc:name="Transform Message" doc:id="8fabd170-b161-4b86-8a59-243c7531c01c" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+				<logger level="INFO" doc:name="Logger" doc:id="f751b931-dde9-4fd8-8990-6bda77646af9" message="Operation cost fetched succesfully"/>
+			</when>
+			<otherwise >
+				<ee:transform doc:name="Transform Message" doc:id="fdab19b9-d3ff-4c11-a1e6-ecc31285b9e7" >
+					<ee:message >
+						<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+  "Message" : "Invalid Input"
+}]]></ee:set-payload>
+					</ee:message>
+				</ee:transform>
+			</otherwise>
+		</choice>
+	</flow>
+</mule>

@@ -126,4 +126,7 @@ output application/json
     <flow name="get:\patient\(PatientId):patient-record-sapi-config">
         <flow-ref doc:name="Flow Reference" doc:id="3fa5a345-1d4d-4dd3-8856-6be9d48968a7" name="patient-record-sysFlow" />
     </flow>
+    <flow name="get:\patient\OperationCost:patient-record-sapi-config">
+        <flow-ref doc:name="Flow Reference" doc:id="8de0204c-cb9c-466e-a9f5-90d9cfd331e6" name="operationcostFlow" />
+    </flow>
 </mule>
